@@ -7,7 +7,7 @@ app = Flask(__name__)
 app.config["DEBUG"] = True
 SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
     username="deepak2409",
-    password="GZ@8HiNDD78wMz@",
+    password="mysqlpass",
     hostname="deepak2409.mysql.pythonanywhere-services.com",
     databasename="deepak2409$comments",
 )
@@ -25,13 +25,14 @@ class Comment(db.Model):
 
 
 
-comments = []
 
 @app.route("/", methods=["GET", "POST"])
 
 def index():
     if request.method == "GET":
-        return render_template("main_page.html", comments=comments)
+        return render_template("main_page.html", comments=Comment.query.all())
+    comment = Comment(content=request.form["contents"])
+    db.session.add(comment)
+    db.session.commit()
 
-    comments.append(request.form["contents"])
     return redirect(url_for('index'))
